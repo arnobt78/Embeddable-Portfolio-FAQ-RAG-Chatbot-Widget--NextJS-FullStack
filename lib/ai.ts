@@ -17,6 +17,7 @@ export async function getAIResponse(
   const systemPrompt = `You are a helpful assistant for Arnob Mahmud's portfolio website. Be friendly, professional, and concise. Use the FAQ context to give accurate answers. If you don't know something, say so.`;
 
   // Normalize messages: ensure content is always a string
+  // This handles various formats: string, array of objects, etc.
   const normalizedMessages: Message[] = messages
     .slice(-6) // Last 6 messages for context
     .map((msg) => {
@@ -24,18 +25,33 @@ export async function getAIResponse(
       if (typeof msg.content === 'string') {
         content = msg.content;
       } else if (Array.isArray(msg.content)) {
-        // Handle array format: extract text from objects
+        // Handle array format: extract text from objects like [{ type: 'input_text', text: '...' }]
         content = msg.content
-          .map((item: any) => (typeof item === 'string' ? item : item.text || item.content || ''))
-          .join('');
+          .map((item: any) => {
+            if (typeof item === 'string') return item;
+            if (item && typeof item === 'object') {
+              return item.text || item.content || item.message || '';
+            }
+            return String(item || '');
+          })
+          .filter((text: string) => text.length > 0) // Remove empty strings
+          .join(' ');
+      } else if (msg.content && typeof msg.content === 'object') {
+        // Handle object format: { text: '...' } or { content: '...' }
+        content = (msg.content as any).text || (msg.content as any).content || (msg.content as any).message || '';
       } else {
         content = String(msg.content || '');
       }
+      // Filter out empty messages
+      if (!content || content.trim().length === 0) {
+        return null;
+      }
       return {
         role: msg.role as 'system' | 'user' | 'assistant',
-        content: content,
+        content: content.trim(),
       };
-    });
+    })
+    .filter((msg): msg is Message => msg !== null); // Remove null messages
 
   const fullMessages: Message[] = [
     { role: 'system', content: systemPrompt + (context ? `\n\nFAQ Context:\n${context}` : '') },
@@ -43,8 +59,8 @@ export async function getAIResponse(
   ];
 
   // Primary: Gemini (reliable and free)
-  // Use stable model names that work with the Google Generative AI SDK
-  const geminiModels = ['gemini-1.5-flash', 'gemini-pro'];
+  // Use stable model names from deprecation table (gemini-2.5-flash, gemini-2.5-pro)
+  const geminiModels = ['gemini-2.5-flash', 'gemini-2.5-pro'];
   
   for (const modelName of geminiModels) {
     try {
@@ -94,11 +110,13 @@ export async function getAIResponse(
     });
 
     // Convert messages to AI SDK format (OpenRouter via OpenAI SDK)
-    // Ensure content is always a string
-    const aiMessages = fullMessages.map(msg => ({
-      role: msg.role as 'system' | 'user' | 'assistant',
-      content: typeof msg.content === 'string' ? msg.content : String(msg.content || ''),
-    }));
+    // fullMessages already has normalized string content, so we can use it directly
+    const aiMessages = fullMessages
+      .map(msg => ({
+        role: msg.role as 'system' | 'user' | 'assistant',
+        content: msg.content, // Already normalized to string
+      }))
+      .filter(msg => msg.content.length > 0); // Remove empty messages
 
     if (stream) {
       return await streamText({
