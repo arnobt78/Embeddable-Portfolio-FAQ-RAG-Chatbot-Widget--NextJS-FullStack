@@ -32,7 +32,7 @@ git push -u origin main
    - `OPENROUTER_API_KEY`
    - `GROQ_API_KEY` (optional)
    - `OPENAI_API_KEY` (optional, if you have it)
-   - `NEXT_PUBLIC_CHATBOT_URL` (will be set to your Vercel URL after deployment)
+   - `NEXT_PUBLIC_CHATBOT_URL` - **Leave this EMPTY for first deployment** (it has a fallback, and you'll update it after deployment)
 4. Click "Deploy"
 5. Wait for deployment to complete
 6. Copy your Vercel deployment URL (e.g., `https://portfolio-chatbot-widget.vercel.app`)
@@ -50,8 +50,9 @@ You should see: `{"success":true,"count":20}`
 ## Step 5: Update Environment Variable
 
 1. Go back to Vercel dashboard → Your project → Settings → Environment Variables
-2. Update `NEXT_PUBLIC_CHATBOT_URL` to your actual Vercel URL
-3. Redeploy (or it will auto-redeploy)
+2. Add or update `NEXT_PUBLIC_CHATBOT_URL` to your actual Vercel URL (e.g., `https://portfolio-chatbot-widget.vercel.app`)
+3. Save the environment variable
+4. Vercel will automatically trigger a new deployment, or you can manually redeploy
 
 ## Step 6: Test the Widget
 
