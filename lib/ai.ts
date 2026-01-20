@@ -10,21 +10,41 @@ interface Message {
 
 // AI Model fallback chain: Gemini (reliable) → OpenRouter GPT (backup)
 export async function getAIResponse(
-  messages: Message[],
+  messages: Array<{ role: string; content: string | any }>,
   context?: string,
   stream: boolean = true
 ) {
   const systemPrompt = `You are a helpful assistant for Arnob Mahmud's portfolio website. Be friendly, professional, and concise. Use the FAQ context to give accurate answers. If you don't know something, say so.`;
 
+  // Normalize messages: ensure content is always a string
+  const normalizedMessages: Message[] = messages
+    .slice(-6) // Last 6 messages for context
+    .map((msg) => {
+      let content: string;
+      if (typeof msg.content === 'string') {
+        content = msg.content;
+      } else if (Array.isArray(msg.content)) {
+        // Handle array format: extract text from objects
+        content = msg.content
+          .map((item: any) => (typeof item === 'string' ? item : item.text || item.content || ''))
+          .join('');
+      } else {
+        content = String(msg.content || '');
+      }
+      return {
+        role: msg.role as 'system' | 'user' | 'assistant',
+        content: content,
+      };
+    });
+
   const fullMessages: Message[] = [
     { role: 'system', content: systemPrompt + (context ? `\n\nFAQ Context:\n${context}` : '') },
-    ...messages.slice(-6), // Last 6 messages for context
+    ...normalizedMessages,
   ];
 
   // Primary: Gemini (reliable and free)
-  // Try multiple model names in case one doesn't work
-  // Using stable generateContent API (not beta Interactions API)
-  const geminiModels = ['gemini-1.5-flash-latest', 'gemini-1.5-pro', 'gemini-pro'];
+  // Use stable model names that work with the Google Generative AI SDK
+  const geminiModels = ['gemini-1.5-flash', 'gemini-pro'];
   
   for (const modelName of geminiModels) {
     try {
@@ -33,8 +53,7 @@ export async function getAIResponse(
       
       // Build prompt with system message and context
       let prompt = systemPrompt + (context ? `\n\nFAQ Context:\n${context}` : '') + '\n\n';
-      prompt += messages
-        .filter(m => m.role !== 'system') // Remove system messages (already in prompt)
+      prompt += normalizedMessages
         .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
         .join('\n\n');
       
@@ -75,9 +94,10 @@ export async function getAIResponse(
     });
 
     // Convert messages to AI SDK format (OpenRouter via OpenAI SDK)
+    // Ensure content is always a string
     const aiMessages = fullMessages.map(msg => ({
       role: msg.role as 'system' | 'user' | 'assistant',
-      content: msg.content,
+      content: typeof msg.content === 'string' ? msg.content : String(msg.content || ''),
     }));
 
     if (stream) {
