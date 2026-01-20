@@ -8,7 +8,7 @@ interface Message {
   content: string;
 }
 
-// AI Model fallback chain: Groq (fastest) → Gemini (reliable) → OpenRouter (backup)
+// AI Model fallback chain: Gemini (reliable) → OpenRouter GPT (backup)
 export async function getAIResponse(
   messages: Message[],
   context?: string,
@@ -21,35 +21,7 @@ export async function getAIResponse(
     ...messages.slice(-6), // Last 6 messages for context
   ];
 
-  // Try Groq first (fastest, free tier) - using OpenRouter as proxy
-  const openaiGroq = createOpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    apiKey: process.env.OPENROUTER_API_KEY!,
-    headers: {
-      'HTTP-Referer': process.env.NEXT_PUBLIC_CHATBOT_URL || 'http://localhost:3000',
-      'X-Title': 'Portfolio Chatbot',
-    },
-  });
-
-  try {
-    if (stream) {
-      return await streamText({
-        model: openaiGroq('groq/llama-3.1-70b-versatile'),
-        messages: fullMessages,
-        temperature: 0.7,
-      });
-    } else {
-      return await generateText({
-        model: openaiGroq('groq/llama-3.1-70b-versatile'),
-        messages: fullMessages,
-        temperature: 0.7,
-      });
-    }
-  } catch (error) {
-    console.log('Groq failed, trying Gemini...', error);
-  }
-
-  // Fallback to Gemini
+  // Primary: Gemini (reliable and free)
   try {
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -75,10 +47,10 @@ export async function getAIResponse(
       return { text: response.text() };
     }
   } catch (error) {
-    console.log('Gemini failed, trying OpenRouter...', error);
+    console.log('Gemini failed, trying OpenRouter GPT...', error);
   }
 
-  // Final fallback to OpenRouter (Claude/GPT)
+  // Fallback to OpenRouter GPT
   try {
     const openaiClient = createOpenAI({
       baseURL: 'https://openrouter.ai/api/v1',
