@@ -23,7 +23,8 @@ export async function getAIResponse(
 
   // Primary: Gemini (reliable and free)
   // Try multiple model names in case one doesn't work
-  const geminiModels = ['gemini-1.5-flash-latest', 'gemini-pro', 'gemini-1.5-pro'];
+  // Using stable generateContent API (not beta Interactions API)
+  const geminiModels = ['gemini-1.5-flash-latest', 'gemini-1.5-pro', 'gemini-pro'];
   
   for (const modelName of geminiModels) {
     try {
