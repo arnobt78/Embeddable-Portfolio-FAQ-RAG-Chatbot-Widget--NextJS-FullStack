@@ -22,8 +22,26 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const chatbotUrl = process.env.NEXT_PUBLIC_CHATBOT_URL || 'https://portfolio-chatbot-widget.vercel.app';
+  
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.CHATBOT_BASE_URL = "${chatbotUrl}";
+              window.CHATBOT_TITLE = "Arnob's Assistant";
+              window.CHATBOT_GREETING = "👋 How can I help you today?";
+              window.CHATBOT_PLACEHOLDER = "Ask about Arnob...";
+            `,
+          }}
+        />
+        <script
+          src={`${chatbotUrl}/widget.js`}
+          async
+        ></script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
