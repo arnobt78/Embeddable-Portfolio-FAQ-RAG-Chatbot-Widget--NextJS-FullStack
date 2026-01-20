@@ -22,37 +22,45 @@ export async function getAIResponse(
   ];
 
   // Primary: Gemini (reliable and free)
-  try {
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
-    // Use gemini-pro or gemini-1.5-flash-latest (v1beta might not support gemini-1.5-flash)
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+  // Try multiple model names in case one doesn't work
+  const geminiModels = ['gemini-1.5-flash-latest', 'gemini-pro', 'gemini-1.5-pro'];
+  
+  for (const modelName of geminiModels) {
+    try {
+      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
+      const model = genAI.getGenerativeModel({ model: modelName });
+      
+      // Build prompt with system message and context
+      let prompt = systemPrompt + (context ? `\n\nFAQ Context:\n${context}` : '') + '\n\n';
+      prompt += messages
+        .filter(m => m.role !== 'system') // Remove system messages (already in prompt)
+        .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
+        .join('\n\n');
+      
+      const result = await model.generateContentStream(prompt);
     
-    // Build prompt with system message and context
-    let prompt = systemPrompt + (context ? `\n\nFAQ Context:\n${context}` : '') + '\n\n';
-    prompt += messages
-      .filter(m => m.role !== 'system') // Remove system messages (already in prompt)
-      .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
-      .join('\n\n');
-    
-    const result = await model.generateContentStream(prompt);
-    
-    // Convert Gemini stream to AI SDK format
-    if (stream) {
-      return {
-        textStream: (async function* () {
-          for await (const chunk of result.stream) {
-            const text = chunk.text();
-            if (text) yield text;
-          }
-        })(),
-      };
-    } else {
-      const response = await result.response;
-      return { text: response.text() };
+      // Convert Gemini stream to AI SDK format
+      if (stream) {
+        return {
+          textStream: (async function* () {
+            for await (const chunk of result.stream) {
+              const text = chunk.text();
+              if (text) yield text;
+            }
+          })(),
+        };
+      } else {
+        const response = await result.response;
+        return { text: response.text() };
+      }
+    } catch (error) {
+      console.log(`Gemini model ${modelName} failed, trying next...`, error);
+      continue; // Try next model
     }
-  } catch (error) {
-    console.log('Gemini failed, trying OpenRouter GPT...', error);
   }
+  
+  // If all Gemini models failed, log and try fallback
+  console.log('All Gemini models failed, trying OpenRouter GPT...');
 
   // Fallback to OpenRouter GPT
   try {
