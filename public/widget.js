@@ -76,7 +76,7 @@ function init(){
   }
   
   // Make button responsive for mobile
-  const btn=$('cb-btn');
+  // Reuse the btn variable already created above
   if(btn){
     if(window.matchMedia('(min-width: 640px)').matches){
       btn.style.bottom='1.5rem';
