@@ -105,12 +105,21 @@ function init(){
   bind();
   theme();
   
-  // Prevent X-axis scrolling on mobile
+  // Prevent X-axis scrolling on mobile and fix viewport for iOS
   if(typeof document!=='undefined'){
     const style=document.createElement('style');
     style.id='cb-no-scroll';
     style.textContent='html,body{overflow-x:hidden!important;max-width:100vw!important;}body>*{max-width:100%!important;overflow-x:hidden!important;}';
     if(!document.getElementById('cb-no-scroll'))document.head.appendChild(style);
+    
+    // Prevent iOS from shifting viewport when keyboard appears
+    const viewportMeta=document.querySelector('meta[name="viewport"]');
+    if(viewportMeta){
+      const content=viewportMeta.getAttribute('content')||'';
+      if(!content.includes('interactive-widget=resizes-content')){
+        viewportMeta.setAttribute('content',content+(content?', ':'')+'interactive-widget=resizes-content');
+      }
+    }
   }
   
   // Handle window resize for responsive behavior
@@ -151,17 +160,47 @@ function init(){
   }
   window.addEventListener('resize',handleResize);
   
-  // Handle mobile keyboard - adjust widget position when keyboard opens/closes
+  // Handle mobile keyboard - adjust widget position relative to button
   function handleKeyboard(){
-    const input=$('cb-i'),chatWindow=$('cb-w');
-    if(!input||!chatWindow)return;
+    const input=$('cb-i'),chatWindow=$('cb-w'),btn=$('cb-btn');
+    if(!input||!chatWindow||!btn)return;
     
-    // Store original bottom position
-    let originalBottom=null;
+    // Store original positions
+    let originalChatBottom=null;
+    let originalBtnBottom=null;
     
     // Detect if mobile device
     const isMobile=window.matchMedia('(max-width: 639px)').matches;
     if(!isMobile)return;
+    
+    // Calculate widget position relative to button
+    const updateWidgetPosition=()=>{
+      // Get button's actual position from viewport (accounts for iOS viewport shifts)
+      const btnRect=btn.getBoundingClientRect();
+      const btnBottomFromViewport=window.innerHeight-btnRect.bottom;
+      const btnHeight=btnRect.height;
+      
+      // Calculate gap: distance from button top to widget bottom
+      // On mobile: ~5rem (80px), on desktop: ~6rem (96px)
+      const gapPx=isMobile?80:96;
+      
+      // Widget bottom = button bottom + button height + gap
+      const widgetBottom=btnBottomFromViewport+btnHeight+gapPx;
+      
+      // Set widget position - use fixed positioning relative to button
+      // Calculate right position from button's right edge
+      const btnRightFromViewport=window.innerWidth-btnRect.right;
+      chatWindow.style.bottom=widgetBottom+'px';
+      // Keep right alignment same as button (mobile: 0.75rem, desktop: 1.5rem)
+      if(isMobile){
+        chatWindow.style.right='0.5rem';
+        chatWindow.style.left='0.5rem';
+      }else{
+        chatWindow.style.right='1.5rem';
+        chatWindow.style.left='auto';
+      }
+      chatWindow.style.transition='bottom 0.3s ease';
+    };
     
     // Use Visual Viewport API if available (modern browsers)
     if(window.visualViewport){
@@ -170,16 +209,20 @@ function init(){
         const wh=window.innerHeight;
         const keyboardHeight=wh-vh;
         
-        if(keyboardHeight>150){ // Keyboard is open (typically 200-300px on mobile)
-          if(originalBottom===null)originalBottom=chatWindow.style.bottom;
-          // Move widget up by keyboard height + some padding
-          const newBottom=keyboardHeight+60+'px';
-          chatWindow.style.bottom=newBottom;
-          chatWindow.style.transition='bottom 0.3s ease';
+        if(keyboardHeight>150){ // Keyboard is open
+          // Store original positions on first keyboard open
+          if(originalChatBottom===null){
+            originalChatBottom=chatWindow.style.bottom;
+            originalBtnBottom=btn.style.bottom;
+          }
+          // Update widget position relative to button
+          updateWidgetPosition();
         }else{ // Keyboard is closed
-          if(originalBottom!==null){
-            chatWindow.style.bottom=originalBottom;
-            originalBottom=null;
+          // Restore original positions
+          if(originalChatBottom!==null){
+            chatWindow.style.bottom=originalChatBottom;
+            originalBtnBottom=null;
+            originalChatBottom=null;
           }
         }
       };
@@ -187,26 +230,33 @@ function init(){
       window.visualViewport.addEventListener('resize',adjustForKeyboard);
       window.visualViewport.addEventListener('scroll',adjustForKeyboard);
     }else{
-      // Fallback: Use focus/blur events and estimate keyboard height
+      // Fallback: Use focus/blur events
       input.addEventListener('focus',()=>{
-        if(originalBottom===null)originalBottom=chatWindow.style.bottom;
-        // Estimate keyboard height (typically 250-300px on mobile)
-        const estimatedKeyboardHeight=280;
-        chatWindow.style.bottom=(estimatedKeyboardHeight+60)+'px';
-        chatWindow.style.transition='bottom 0.3s ease';
-        // Scroll input into view
-        setTimeout(()=>{
-          input.scrollIntoView({behavior:'smooth',block:'center'});
-        },100);
+        if(originalChatBottom===null){
+          originalChatBottom=chatWindow.style.bottom;
+          originalBtnBottom=btn.style.bottom;
+        }
+        // Update widget position relative to button
+        updateWidgetPosition();
       });
       
       input.addEventListener('blur',()=>{
-        if(originalBottom!==null){
-          chatWindow.style.bottom=originalBottom;
-          originalBottom=null;
+        if(originalChatBottom!==null){
+          chatWindow.style.bottom=originalChatBottom;
+          originalBtnBottom=null;
+          originalChatBottom=null;
         }
       });
     }
+    
+    // Also update on window resize to maintain relative positioning
+    const resizeHandler=()=>{
+      if(originalChatBottom!==null){
+        // Keyboard is open, maintain relative position
+        updateWidgetPosition();
+      }
+    };
+    window.addEventListener('resize',resizeHandler);
   }
   
   // Initialize keyboard handling after a short delay to ensure elements exist
