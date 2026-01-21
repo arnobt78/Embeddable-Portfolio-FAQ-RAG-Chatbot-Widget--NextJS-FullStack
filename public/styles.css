@@ -77,10 +77,7 @@
   color: #e5e7eb !important;
 }
 
-#cb.dark #cb-d button:hover,
-.dark #cb-d button:hover {
-  background-color: #111827 !important;
-}
+/* Hover styles handled by inline onmouseover/onmouseout in widget.js */
 
 #cb.dark #cb-ms,
 .dark #cb-ms {

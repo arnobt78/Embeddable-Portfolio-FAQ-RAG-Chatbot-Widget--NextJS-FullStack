@@ -166,8 +166,16 @@ function theme(){
     if(title)title.style.color='#ffffff';
     if(m){m.style.color='#9ca3af';m.setAttribute('onmouseover',"this.style.backgroundColor='#1f2937'");m.setAttribute('onmouseout',"this.style.backgroundColor='transparent'");}
     if(d){d.style.backgroundColor='#1f2937';d.style.borderColor='#374151';}
-    if(th){th.style.color='#e5e7eb';th.setAttribute('onmouseover',"this.style.backgroundColor='#111827'");th.setAttribute('onmouseout',"this.style.backgroundColor='transparent'");}
-    if(cl){cl.style.color='#e5e7eb';cl.setAttribute('onmouseover',"this.style.backgroundColor='#111827'");cl.setAttribute('onmouseout',"this.style.backgroundColor='transparent'");}
+    if(th){
+      th.style.color='#e5e7eb';
+      th.onmouseover=function(){this.style.backgroundColor='#111827';this.style.setProperty('background-color','#111827','important');};
+      th.onmouseout=function(){this.style.backgroundColor='transparent';this.style.setProperty('background-color','transparent','important');};
+    }
+    if(cl){
+      cl.style.color='#e5e7eb';
+      cl.onmouseover=function(){this.style.backgroundColor='#111827';this.style.setProperty('background-color','#111827','important');};
+      cl.onmouseout=function(){this.style.backgroundColor='transparent';this.style.setProperty('background-color','transparent','important');};
+    }
     if(ms)ms.style.backgroundColor='#030712';
     if(ty)ty.style.backgroundColor='#030712';
     if(f){f.style.backgroundColor='#111827';f.style.borderColor='#1f2937';}
