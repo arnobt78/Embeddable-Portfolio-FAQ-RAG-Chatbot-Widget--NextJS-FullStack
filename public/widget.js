@@ -184,10 +184,19 @@ async function load(){
   }catch(e){}
 }
 
-// Initialize immediately - button appears instantly
+// Initialize when body is available
+function waitForBody(){
+  if(document.body){
+    init();
+  }else{
+    setTimeout(waitForBody,10);
+  }
+}
+
+// Start initialization
 if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',init);
+  document.addEventListener('DOMContentLoaded',waitForBody);
 }else{
-  init();
+  waitForBody();
 }
 })();
