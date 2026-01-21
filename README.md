@@ -1,4 +1,4 @@
-# Embeddable RAG FAQ-Based AI Chatbot Widget - Next.js, Redis, Gemini, Hugging Face, OpenRouter, Vectorize, BGE Model FullStack Project
+# Embeddable RAG FAQ-Based AI Chatbot Widget - Next.js, Vectorize, Redis, Gemini, Hugging Face, OpenRouter FullStack Project
 
 A production-ready, self-hosted RAG (Retrieval Augmented Generation) chatbot widget built with Next.js, Redis vector storage, and multiple AI model fallbacks. Perfect for embedding into portfolio websites or any web application.
 
