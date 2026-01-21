@@ -121,6 +121,7 @@ export function WidgetMenu() {
     toast.success("Started new chat");
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmitFeedback = async () => {
     try {
       const CHATBOT_BASE_URL =

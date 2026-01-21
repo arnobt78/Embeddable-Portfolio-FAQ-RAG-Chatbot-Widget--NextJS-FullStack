@@ -101,6 +101,7 @@ export default function RootLayout({
           }}
         />
         {/* Load widget styles for React widget */}
+        {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link rel="stylesheet" href="/styles.css" />
         {/* Vanilla JS widget for external embedding only - disabled when using React widget */}
         {/* Uncomment this line when embedding on external sites */}

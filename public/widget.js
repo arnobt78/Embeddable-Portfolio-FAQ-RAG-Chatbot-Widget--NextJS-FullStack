@@ -8,7 +8,7 @@ const C={
   g:window.CHATBOT_GREETING||'👋 How can I help you today?'
 };
 let open=0,msgs=[],typing=0,menu=0,dark=false;
-try{dark=matchMedia('(prefers-color-scheme:dark)').matches;}catch(e){}
+try{dark=matchMedia('(prefers-color-scheme:dark)').matches;}catch{}
 const $=id=>document.getElementById(id),tog=(e,c,on)=>e&&e.classList&&e.classList.toggle(c,on);
 
 // Add bounce animation keyframes if not exists
@@ -329,10 +329,10 @@ async function send(e){
             }
             if(ms)ms.scrollTop=ms.scrollHeight;
           }
-        }catch(e){}
+        }catch{}
       }
     }
-  }catch(e){
+  }catch{
     if(typingEl)typingEl.style.display='none';
     typing=0;
     add('assistant','Sorry, an error occurred.');
@@ -353,7 +353,7 @@ async function load(){
         draw();
       }
     }
-  }catch(e){}
+  }catch{}
 }
 
 // Initialize when body is available
