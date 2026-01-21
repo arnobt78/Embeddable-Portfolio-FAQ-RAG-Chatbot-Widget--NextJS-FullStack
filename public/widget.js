@@ -16,8 +16,9 @@ function init(){
   const btn=document.createElement('button');
   btn.id='cb-btn';
   btn.className='fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-14 h-14 bg-black rounded-full shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 transition-all z-[99998]';
-  btn.style.cssText='pointer-events:auto!important;background-color:#000000!important;border-radius:9999px!important;width:3.5rem!important;height:3.5rem!important;';
-  btn.innerHTML=`<svg id="cb-o" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg><svg id="cb-x" class="w-6 h-6 text-white absolute opacity-0 scale-50 transition-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>`;
+  // CRITICAL: Inline styles ensure positioning works even without Tailwind
+  btn.style.cssText='position:fixed!important;bottom:1rem!important;right:1rem!important;width:3.5rem!important;height:3.5rem!important;background-color:#000000!important;border-radius:9999px!important;border:none!important;cursor:pointer!important;z-index:99998!important;pointer-events:auto!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)!important;';
+  btn.innerHTML=`<svg id="cb-o" style="width:1.5rem;height:1.5rem;color:white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg><svg id="cb-x" style="width:1.5rem;height:1.5rem;color:white;position:absolute;opacity:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>`;
   document.body.appendChild(btn);
   
   // Load CSS asynchronously (non-blocking)
@@ -39,6 +40,20 @@ function init(){
 <div id="cb-ty" class="hidden px-3 sm:px-5 pb-2 bg-gray-50 dark:bg-gray-950"><div class="flex items-center gap-2 text-gray-400 text-sm"><div class="flex gap-1"><span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span><span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay:.15s"></span><span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay:.3s"></span></div>Thinking...</div></div>
 <form id="cb-f" class="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4 border-t bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800"><input id="cb-i" type="text" class="flex-1 min-w-0 px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600" placeholder="${C.p}" autocomplete="off"/><button type="submit" id="cb-se" class="p-2 sm:p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full disabled:opacity-50 shrink-0"><svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"/></svg></button></form></div>`;
   document.body.appendChild(d);
+  
+  // CRITICAL: Apply inline styles to chat window to ensure positioning works without Tailwind
+  const chatWindow=$('cb-w');
+  if(chatWindow){
+    chatWindow.style.cssText='position:fixed!important;bottom:5rem!important;right:1rem!important;width:calc(100vw - 2rem)!important;max-width:calc(100vw - 2rem)!important;height:calc(100vh - 6rem)!important;max-height:600px!important;border-radius:1rem!important;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;z-index:99999!important;opacity:0!important;transform:scale(0.95)!important;pointer-events:none!important;background-color:#ffffff!important;transition:opacity 0.2s,transform 0.2s!important;';
+    // Responsive styles for larger screens
+    if(window.matchMedia('(min-width: 640px)').matches){
+      chatWindow.style.bottom='6rem';
+      chatWindow.style.right='1.5rem';
+      chatWindow.style.width='400px';
+      chatWindow.style.maxWidth='400px';
+      chatWindow.style.height='600px';
+    }
+  }
   
   bind();
   theme();
@@ -68,6 +83,16 @@ function flip(){
   open=!open;
   const w=$('cb-w'),o=$('cb-o'),x=$('cb-x'),input=$('cb-i');
   if(w){
+    // Use inline styles for reliable positioning without Tailwind
+    if(open){
+      w.style.opacity='1';
+      w.style.transform='scale(1)';
+      w.style.pointerEvents='auto';
+    }else{
+      w.style.opacity='0';
+      w.style.transform='scale(0.95)';
+      w.style.pointerEvents='none';
+    }
     tog(w,'opacity-0',!open);
     tog(w,'scale-95',!open);
     tog(w,'pointer-events-none',!open);
