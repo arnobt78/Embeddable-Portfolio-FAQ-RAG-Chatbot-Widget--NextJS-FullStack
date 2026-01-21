@@ -38,7 +38,7 @@ function init(){
   // Create chat window - convert all Tailwind classes to inline styles
   const d=document.createElement('div');
   d.id='cb';
-  const chatWindowBaseStyle='position:fixed!important;bottom:5rem!important;right:1rem!important;width:calc(100vw - 2rem)!important;max-width:calc(100vw - 2rem)!important;height:calc(100vh - 6rem)!important;max-height:600px!important;border-radius:1rem!important;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;z-index:99999!important;opacity:0!important;transform:scale(0.95)!important;pointer-events:none!important;background-color:#ffffff!important;transition:opacity 0.2s,transform 0.2s!important;transform-origin:bottom right!important;';
+  const chatWindowBaseStyle='position:fixed!important;bottom:5rem!important;right:1rem!important;width:calc(100vw - 2rem)!important;max-width:calc(100vw - 2rem)!important;height:calc(100vh - 6rem)!important;max-height:600px!important;border-radius:1rem!important;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;z-index:99999!important;opacity:0!important;transform:scale(0.95)!important;pointer-events:none!important;background-color:#ffffff!important;transition:opacity 0.2s,transform 0.2s,bottom 0.3s ease!important;transform-origin:bottom right!important;';
   d.innerHTML=`<div id="cb-w" style="${chatWindowBaseStyle}">
 <div id="cb-header" style="display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0.75rem 1rem!important;border-bottom:1px solid #f3f4f6!important;background-color:#ffffff!important;flex-shrink:0!important;"><div style="display:flex!important;align-items:center!important;gap:0.5rem!important;min-width:0!important;flex:1!important;"><div id="cb-avatar" style="width:2rem!important;height:2rem!important;background-color:#000000!important;border-radius:9999px!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;"><svg style="width:1rem!important;height:1rem!important;color:white!important;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div><h3 id="cb-title" style="font-size:0.875rem!important;font-weight:600!important;color:#111827!important;margin:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;">${C.t}</h3></div>
 <div style="position:relative!important;flex-shrink:0!important;"><button id="cb-m" style="padding:0.5rem!important;border:none!important;background:transparent!important;cursor:pointer!important;border-radius:9999px!important;color:#6b7280!important;transition:background-color 0.2s!important;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'"><svg style="width:1.25rem!important;height:1.25rem!important;color:inherit!important;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
@@ -100,6 +100,14 @@ function init(){
   bind();
   theme();
   
+  // Prevent X-axis scrolling on mobile
+  if(typeof document!=='undefined'){
+    const style=document.createElement('style');
+    style.id='cb-no-scroll';
+    style.textContent='html,body{overflow-x:hidden!important;max-width:100vw!important;}body>*{max-width:100%!important;overflow-x:hidden!important;}';
+    if(!document.getElementById('cb-no-scroll'))document.head.appendChild(style);
+  }
+  
   // Handle window resize for responsive behavior
   function handleResize(){
     const chatWindow=$('cb-w'),btn=$('cb-btn');
@@ -137,6 +145,67 @@ function init(){
     }
   }
   window.addEventListener('resize',handleResize);
+  
+  // Handle mobile keyboard - adjust widget position when keyboard opens/closes
+  function handleKeyboard(){
+    const input=$('cb-i'),chatWindow=$('cb-w');
+    if(!input||!chatWindow)return;
+    
+    // Store original bottom position
+    let originalBottom=null;
+    
+    // Detect if mobile device
+    const isMobile=window.matchMedia('(max-width: 639px)').matches;
+    if(!isMobile)return;
+    
+    // Use Visual Viewport API if available (modern browsers)
+    if(window.visualViewport){
+      const adjustForKeyboard=()=>{
+        const vh=window.visualViewport.height;
+        const wh=window.innerHeight;
+        const keyboardHeight=wh-vh;
+        
+        if(keyboardHeight>150){ // Keyboard is open (typically 200-300px on mobile)
+          if(originalBottom===null)originalBottom=chatWindow.style.bottom;
+          // Move widget up by keyboard height + some padding
+          const newBottom=keyboardHeight+60+'px';
+          chatWindow.style.bottom=newBottom;
+          chatWindow.style.transition='bottom 0.3s ease';
+        }else{ // Keyboard is closed
+          if(originalBottom!==null){
+            chatWindow.style.bottom=originalBottom;
+            originalBottom=null;
+          }
+        }
+      };
+      
+      window.visualViewport.addEventListener('resize',adjustForKeyboard);
+      window.visualViewport.addEventListener('scroll',adjustForKeyboard);
+    }else{
+      // Fallback: Use focus/blur events and estimate keyboard height
+      input.addEventListener('focus',()=>{
+        if(originalBottom===null)originalBottom=chatWindow.style.bottom;
+        // Estimate keyboard height (typically 250-300px on mobile)
+        const estimatedKeyboardHeight=280;
+        chatWindow.style.bottom=(estimatedKeyboardHeight+60)+'px';
+        chatWindow.style.transition='bottom 0.3s ease';
+        // Scroll input into view
+        setTimeout(()=>{
+          input.scrollIntoView({behavior:'smooth',block:'center'});
+        },100);
+      });
+      
+      input.addEventListener('blur',()=>{
+        if(originalBottom!==null){
+          chatWindow.style.bottom=originalBottom;
+          originalBottom=null;
+        }
+      });
+    }
+  }
+  
+  // Initialize keyboard handling after a short delay to ensure elements exist
+  setTimeout(handleKeyboard,200);
   
   // Load history in background (non-blocking)
   setTimeout(()=>load().catch(()=>{}),100);

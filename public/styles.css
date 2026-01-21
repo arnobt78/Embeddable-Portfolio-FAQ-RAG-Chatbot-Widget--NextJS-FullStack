@@ -1,5 +1,16 @@
 /* Chatbot Widget Styles - Works with Tailwind CSS */
 
+/* Prevent horizontal scrolling on mobile */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+body > * {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
 /* Reset and base styles */
 #cb, #cb * {
   box-sizing: border-box;
