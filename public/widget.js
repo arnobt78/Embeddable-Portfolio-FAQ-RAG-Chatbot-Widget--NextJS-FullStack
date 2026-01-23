@@ -105,14 +105,9 @@ function init(){
   bind();
   theme();
   
-  // Prevent X-axis scrolling on mobile and fix viewport for iOS
+  // Note: Removed global html/body overflow-x styles - moved to portfolio's globals.css
+  // Prevent iOS from shifting viewport when keyboard appears
   if(typeof document!=='undefined'){
-    const style=document.createElement('style');
-    style.id='cb-no-scroll';
-    style.textContent='html,body{overflow-x:hidden!important;max-width:100vw!important;}body>*{max-width:100%!important;overflow-x:hidden!important;}';
-    if(!document.getElementById('cb-no-scroll'))document.head.appendChild(style);
-    
-    // Prevent iOS from shifting viewport when keyboard appears
     const viewportMeta=document.querySelector('meta[name="viewport"]');
     if(viewportMeta){
       const content=viewportMeta.getAttribute('content')||'';
