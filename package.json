@@ -1,6 +1,35 @@
 {
   "name": "portfolio-chatbot-widget",
   "version": "0.1.0",
+  "description": "A production-ready, self-hosted RAG (Retrieval Augmented Generation) chatbot widget built with Next.js, Redis vector storage, and multiple AI model fallbacks. Perfect for embedding into portfolio websites or any web application.",
+  "author": {
+    "name": "Arnob Mahmud",
+    "url": "https://www.arnobmahmud.com/"
+  },
+  "license": "MIT",
+  "homepage": "https://www.arnobmahmud.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arnobt78/portfolio-chatbot-widget.git"
+  },
+  "keywords": [
+    "chatbot",
+    "rag",
+    "nextjs",
+    "react",
+    "ai",
+    "widget",
+    "portfolio",
+    "embeddable",
+    "redis",
+    "vector-search",
+    "openai",
+    "groq",
+    "google-ai",
+    "open-source",
+    "typescript",
+    "tailwindcss"
+  ],
   "private": true,
   "scripts": {
     "dev": "next dev",

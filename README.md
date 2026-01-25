@@ -1,12 +1,18 @@
 # Embeddable RAG FAQ-Based AI Chatbot Widget - Next.js, Vectorize, Redis, Gemini, Hugging Face, OpenRouter FullStack Project
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.4-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2.3-blue)](https://react.dev/)
+
 A production-ready, self-hosted RAG (Retrieval Augmented Generation) chatbot widget built with Next.js, Redis vector storage, and multiple AI model fallbacks. Perfect for embedding into portfolio websites or any web application.
 
 - **Live Demo:** [https://portfolio-chatbot-widget.vercel.app/](https://portfolio-chatbot-widget.vercel.app/)
 
 - **Production Live:** [https://www.arnobmahmud.com/](https://www.arnobmahmud.com/)
 
----
+**Author:** [Arnob Mahmud](https://www.arnobmahmud.com/) | **License:** [MIT](./LICENSE)
+
+> 🌟 **Open Source Project** - This is an open-source project. Feel free to use, enhance, and extend this project to the next level! Contributions, improvements, forks, and stars are always welcome. Together, we can make this chatbot widget even better!
 
 ## 📋 Table of Contents
 
@@ -849,6 +855,54 @@ Modify `components/chatbot/chatbot-widget.tsx`:
 
 ---
 
+## 🤝 Contributing
+
+This is an **open-source project** and contributions are welcome! Whether you want to:
+
+- 🐛 Fix bugs
+- ✨ Add new features
+- 📚 Improve documentation
+- 🎨 Enhance UI/UX
+- ⚡ Optimize performance
+- 🔧 Refactor code
+- 🌍 Add translations
+- 💡 Suggest improvements
+
+**Feel free to:**
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Make your changes** with proper TypeScript types and linting
+4. **Commit your changes** (`git commit -m 'Add some amazing feature'`)
+5. **Push to the branch** (`git push origin feature/amazing-feature`)
+6. **Open a Pull Request**
+
+### Development Guidelines
+
+- Use **TypeScript** with proper type definitions
+- Follow **ESLint** rules (run `npm run lint`)
+- Write **clear commit messages**
+- Add **comments** for complex logic
+- Test your changes before submitting
+- Update **documentation** if needed
+
+### Ideas for Contributions
+
+- Add support for more AI models
+- Implement voice input/output
+- Add multi-language support
+- Create additional UI themes
+- Improve mobile responsiveness
+- Add analytics integration
+- Enhance error handling
+- Add unit/integration tests
+- Optimize bundle size
+- Add more customization options
+
+**Together, we can take this project to the next level!** 🚀
+
+---
+
 ## 📝 Conclusion
 
 This project demonstrates a production-ready implementation of an AI chatbot widget with RAG capabilities, built with Next.js and modern React patterns. It showcases:
@@ -866,9 +920,9 @@ The codebase is well-documented and structured for easy understanding and extens
 
 ## Happy Coding! 🎉
 
-Feel free to use this project repository and extend this project further!
+This is an **open-source project** - feel free to use, enhance, and extend this project further!
 
-If you have any questions or want to share your work, reach out via GitHub or my portfolio at [https://www.arnobmahmud.com/](https://www.arnobmahmud.com/).
+If you have any questions, want to contribute, or want to share your work, reach out via GitHub or my portfolio at [https://www.arnobmahmud.com/](https://www.arnobmahmud.com/).
 
 **Enjoy building and learning!** 🚀
 
