@@ -14,7 +14,13 @@ A production-ready, self-hosted RAG (Retrieval Augmented Generation) chatbot wid
 
 > 🌟 **Open Source Project** - This is an open-source project. Feel free to use, enhance, and extend this project to the next level! Contributions, improvements, forks, and stars are always welcome. Together, we can make this chatbot widget even better!
 
-<img width="1784" height="870" alt="Screenshot 2026-01-25 at 15 13 47" src="https://github.com/user-attachments/assets/d7416481-2f01-4f89-aad0-8eb7297b72fa" /> <img width="1667" height="859" alt="Screenshot 2026-01-25 at 15 13 59" src="https://github.com/user-attachments/assets/468cfffa-40e6-4561-8dbc-a263a5e224ac" /> <img width="1529" height="847" alt="Screenshot 2026-01-25 at 15 14 09" src="https://github.com/user-attachments/assets/cd835693-5a84-4368-a4cd-e90ff7c57e66" /> <img width="1885" height="843" alt="Screenshot 2026-01-25 at 15 14 27" src="https://github.com/user-attachments/assets/a22f9ce9-8355-4e6e-8ff5-0f8c6854a9e5" /> <img width="1659" height="856" alt="Screenshot 2026-01-25 at 15 14 49" src="https://github.com/user-attachments/assets/5c5400c4-0d44-4590-8a71-181d3d57ab6b" /> <img width="1497" height="846" alt="Screenshot 2026-01-25 at 15 14 58" src="https://github.com/user-attachments/assets/af6b6a71-3124-4a13-81ee-3d99a642993a" /> <img width="1636" height="819" alt="Screenshot 2026-01-25 at 15 15 16" src="https://github.com/user-attachments/assets/2059cd6d-ce3b-4e5d-a7fc-6d4a61fd0452" />
+![Screenshot 2026-01-25 at 15 13 47](https://github.com/user-attachments/assets/d7416481-2f01-4f89-aad0-8eb7297b72fa)
+![Screenshot 2026-01-25 at 15 13 59](https://github.com/user-attachments/assets/468cfffa-40e6-4561-8dbc-a263a5e224ac)
+![Screenshot 2026-01-25 at 15 14 09](https://github.com/user-attachments/assets/cd835693-5a84-4368-a4cd-e90ff7c57e66)
+![Screenshot 2026-01-25 at 15 14 27](https://github.com/user-attachments/assets/a22f9ce9-8355-4e6e-8ff5-0f8c6854a9e5)
+![Screenshot 2026-01-25 at 15 14 49](https://github.com/user-attachments/assets/5c5400c4-0d44-4590-8a71-181d3d57ab6b)
+![Screenshot 2026-01-25 at 15 14 58](https://github.com/user-attachments/assets/af6b6a71-3124-4a13-81ee-3d99a642993a)
+![Screenshot 2026-01-25 at 15 15 16](https://github.com/user-attachments/assets/2059cd6d-ce3b-4e5d-a7fc-6d4a61fd0452)
 
 ## 📋 Table of Contents
 
