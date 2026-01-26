@@ -29,7 +29,51 @@ export interface FAQMetadata {
 // Session management
 export async function getSession(sessionId: string): Promise<Session | null> {
   const data = await redis.get(`chat:session:${sessionId}`);
-  return data as Session | null;
+  if (!data) return null;
+  
+  // Parse JSON if it's a string, otherwise use as-is
+  let session: Session;
+  if (typeof data === 'string') {
+    try {
+      session = JSON.parse(data) as Session;
+    } catch (e) {
+      console.error('Failed to parse session data:', e);
+      return null;
+    }
+  } else {
+    session = data as Session;
+  }
+  
+  // Normalize message content to ensure it's always a string (handle legacy array format)
+  if (session.messages && Array.isArray(session.messages)) {
+    session.messages = session.messages.map((msg) => {
+      // If content is an array, normalize it to string
+      if (Array.isArray(msg.content)) {
+        const normalizedContent = (msg.content as unknown[])
+          .map((item: unknown) => {
+            if (typeof item === 'string') return item;
+            if (item && typeof item === 'object') {
+              const itemObj = item as { text?: string; content?: string; message?: string };
+              return itemObj.text || itemObj.content || itemObj.message || '';
+            }
+            return String(item || '');
+          })
+          .filter((text: string) => text.length > 0)
+          .join(' ');
+        return { ...msg, content: normalizedContent };
+      }
+      // If content is an object, extract text
+      if (msg.content && typeof msg.content === 'object' && !Array.isArray(msg.content)) {
+        const contentObj = msg.content as { text?: string; content?: string; message?: string };
+        const normalizedContent = contentObj.text || contentObj.content || contentObj.message || String(msg.content);
+        return { ...msg, content: normalizedContent };
+      }
+      // Already a string or convert to string
+      return { ...msg, content: typeof msg.content === 'string' ? msg.content : String(msg.content || '') };
+    });
+  }
+  
+  return session;
 }
 
 export async function saveSession(
